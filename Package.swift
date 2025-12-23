@@ -5,16 +5,16 @@ import PackageDescription
 let package = Package(
     name: "VisualEffectView",
     platforms: [
-        .macOS(.v11)
+        .macOS(.v13)
     ],
     products: [
         .library(
             name: "VisualEffectView",
-            targets: ["VisualEffectView"]),
+            targets: ["VisualEffectView"])
     ],
     targets: [
         .target(
-            name: "VisualEffectView"),
-        
+            name: "VisualEffectView",
+            dependencies: []),
     ]
 )

@@ -1,55 +1,57 @@
 import SwiftUI
 import AppKit
-    
-public protocol VisualEffectConfiguration {
-    var material: NSVisualEffectView.Material { get }
-    var blendingMode: NSVisualEffectView.BlendingMode { get }
-    var isEmphasized: Bool { get }
-}
-    
-public struct VisualEffectView: View {
-    private let configuration: VisualEffectConfiguration?
-    
-    public init(config: VisualEffectConfiguration? = nil) {
-        self.configuration = config
-    }
+
+public struct VisualEffectConfig: Hashable, Sendable {
+    public var material: NSVisualEffectView.Material
+    public var blendingMode: NSVisualEffectView.BlendingMode
+    public var state: NSVisualEffectView.State
+    public var isEmphasized: Bool
     
     public init(
-        material: NSVisualEffectView.Material,
-        blendingMode: NSVisualEffectView.BlendingMode,
-        isEmphasized: Bool = true
+        material: NSVisualEffectView.Material = .sidebar,
+        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+        state: NSVisualEffectView.State = .followsWindowActiveState,
+        isEmphasized: Bool = false
     ) {
-        self.configuration = CustomVisualEffectConfiguration(
+        self.material = material
+        self.blendingMode = blendingMode
+        self.state = state
+        self.isEmphasized = isEmphasized
+    }
+}
+
+public struct VisualEffectView: NSViewRepresentable {
+    
+    private let config: VisualEffectConfig
+    
+    public init(
+        material: NSVisualEffectView.Material = .sidebar,
+        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+        state: NSVisualEffectView.State = .followsWindowActiveState,
+        isEmphasized: Bool = false
+    ) {
+        self.config = VisualEffectConfig(
             material: material,
             blendingMode: blendingMode,
+            state: state,
             isEmphasized: isEmphasized
         )
     }
     
-    public var body: some View {
-        Representable(configuration: configuration)
-            .ignoresSafeArea()
+    public init(configuration: VisualEffectConfig) {
+        self.config = configuration
     }
     
-    private struct CustomVisualEffectConfiguration: VisualEffectConfiguration {
-        let material: NSVisualEffectView.Material
-        let blendingMode: NSVisualEffectView.BlendingMode
-        let isEmphasized: Bool
+    
+    public func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        return view
     }
     
-    private struct Representable: NSViewRepresentable {
-        var configuration: VisualEffectConfiguration?
-    
-        func makeNSView(context: Context) -> NSVisualEffectView {
-            let view = NSVisualEffectView()
-            view.state = .active
-            return view
-        }
-    
-        func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
-            nsView.material = configuration?.material ?? .popover
-            nsView.blendingMode = configuration?.blendingMode ?? .behindWindow
-            nsView.isEmphasized = configuration?.isEmphasized ?? true
-        }
+    public func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        if nsView.material != config.material { nsView.material = config.material }
+        if nsView.blendingMode != config.blendingMode { nsView.blendingMode = config.blendingMode }
+        if nsView.state != config.state { nsView.state = config.state }
+        if nsView.isEmphasized != config.isEmphasized { nsView.isEmphasized = config.isEmphasized }
     }
 }
