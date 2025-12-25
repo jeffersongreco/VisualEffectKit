@@ -3,18 +3,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "VisualEffectView",
+    name: "VisualEffectKit",
     platforms: [
         .macOS(.v13)
     ],
     products: [
         .library(
-            name: "VisualEffectView",
-            targets: ["VisualEffectView"])
+            name: "VisualEffectKit",
+            targets: ["VisualEffectKit"])
     ],
     targets: [
         .target(
-            name: "VisualEffectView",
+            name: "VisualEffectKit",
             dependencies: []),
     ]
 )
